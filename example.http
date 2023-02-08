@@ -5,7 +5,7 @@
 POST {{local}}/users
 Content-Type: application/json
 
- { "name":"ben","email":"5sdddggg4dmGGG@gmail.com","password":"Re'eMt23","isBiz":"true"}
+ { "name":"ben","email":"1111@gmail.com","password":"Re'eMt23","isBiz":"true"}
 
 
 ###
@@ -19,7 +19,7 @@ Content-Type: application/json
 POST  {{local}}/auth
 Content-Type: application/json
 
-{ "email": "5sdddggg4dmGGG@gmail.com","password":"Re'eMt23"}
+{ "email": "1111@gmail.com","password":"Re'eMt23"}
 
 ###
 POST {{local}}/cards/create-card

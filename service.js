@@ -5,7 +5,7 @@ const {
   validateSignIn,
   validateCard,
 } = require('./db');
-const jwt = require('jsonwebtoken');
+
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 require('dotenv').config();
@@ -16,15 +16,7 @@ const createUser = async (req, res) => {
     res.status(400).send(error.details[0].message);
     return;
   }
-  const {
-    name,
-    email,
-    password,
-    isBiz,
-    data = jwt.sign({ isBiz: isBiz, email: email }, process.env.SECRET, {
-      expiresIn: '1h',
-    }),
-  } = req.body;
+  const { name, email, password, isBiz } = req.body;
 
   let user = await User.findOne({ email: email });
   if (user) {
@@ -37,7 +29,6 @@ const createUser = async (req, res) => {
     email: email,
     password: await bcrypt.hash(password, 12),
     isBiz: isBiz,
-    token: data,
   }).save();
 
   res.send(_.pick(user, ['_id', 'name', 'isBiz']));
@@ -71,7 +62,8 @@ const signIn = async (req, res, next) => {
     res.status(400).send('Invalid  password');
     return;
   }
-  res.send(user.token);
+  const token = user.generateAuthToken();
+  res.send({ token });
 };
 const createCard = async (req, res) => {
   const { error } = validateCard(req.body);

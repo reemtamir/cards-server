@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 const connect = () =>
@@ -40,7 +41,15 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   cards: { type: Array },
 });
-
+userSchema.methods.generateAuthToken = function () {
+  return jwt.sign(
+    { isBiz: this.isBiz, _id: this._id },
+    process.env.TOKEN_SECRET,
+    {
+      expiresIn: '1h',
+    }
+  );
+};
 const bizCard = mongoose.model('Card', cardSchema, 'cards');
 const User = mongoose.model('User', userSchema, 'users');
 
