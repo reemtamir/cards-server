@@ -1,28 +1,46 @@
-const { bizCard, User } = require('./db');
+const {
+  bizCard,
+  User,
+  validateCreateUser,
+  validateSignIn,
+  validateCard,
+} = require('./db');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const _ = require('lodash');
 require('dotenv').config();
+
 const createUser = async (req, res) => {
+  const { error } = validateCreateUser(req.body);
+  if (error) {
+    res.status(400).send(error.details[0].message);
+    return;
+  }
   const {
     name,
     email,
     password,
-    isBiz = false,
-    data = jwt.sign({ isBiz: isBiz }, process.env.SECRET, { expiresIn: '1h' }),
+    isBiz,
+    data = jwt.sign({ isBiz: isBiz, email: email }, process.env.SECRET, {
+      expiresIn: '1h',
+    }),
   } = req.body;
 
-  const user = new User({
+  let user = await User.findOne({ email: email });
+  if (user) {
+    res.status(400).send('User already registered');
+    return;
+  }
+
+  user = await new User({
     name: name,
     email: email,
-    password: password,
+    password: await bcrypt.hash(password, 12),
     isBiz: isBiz,
     token: data,
-  });
-  try {
-    await user.save();
-    res.send(user);
-  } catch (response) {
-    console.log('Email already exist');
-  }
+  }).save();
+
+  res.send(_.pick(user, ['_id', 'name', 'isBiz']));
 };
 
 const getUserByEmail = async (req, res) => {
@@ -30,24 +48,53 @@ const getUserByEmail = async (req, res) => {
   res.send(user);
 };
 
+const signIn = async (req, res, next) => {
+  const { error } = validateSignIn(req.body);
+  if (error) {
+    res.status(400).send(error.details[0].message);
+    return;
+  }
+  const user = await User.findOne({
+    email: req.body.email,
+  });
+
+  if (!user) {
+    res.status(400).send('Invalid email');
+    return;
+  }
+
+  const isValidPassword = await bcrypt.compare(
+    req.body.password,
+    user.password
+  );
+  if (!isValidPassword) {
+    res.status(400).send('Invalid  password');
+    return;
+  }
+  res.send(user.token);
+};
 const createCard = async (req, res) => {
+  const { error } = validateCard(req.body);
+  if (error) {
+    res.status(400).send(error.details[0].message);
+    return;
+  }
   const {
-    bizName: name,
-    bizPhone: phone,
-    bizAddress: address,
-    bizDescription: description,
-    bizImage:
-      image = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+    name,
+    phone,
+    address,
+    description,
+
+    image = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
   } = req.body;
-  const card = new bizCard({
+  const card = await new bizCard({
     bizName: name,
     bizPhone: phone,
     bizAddress: address,
     bizDescription: description,
     bizImage: image,
-  });
+  }).save();
 
-  await card.save();
   res.send(card);
 };
 const findCardById = async (req, res) => {
@@ -59,24 +106,18 @@ const getAllCards = async (req, res) => {
 
   res.send(cards);
 };
-
-const signIn = async (req, res, next) => {
-  const user = await User.findOne({
-    email: req.body.email,
-    password: req.body.password,
-  });
-
-  res.send(user);
-};
-
 const updateCard = async (req, res) => {
+  const { error } = validateCard(req.body);
+  if (error) {
+    res.status(400).send(error.details[0].message);
+    return;
+  }
   const {
-    bizName: name,
-    bizAddress: address,
-    bizPhone: phone,
-    bizDescription: description,
-    bizImage:
-      image = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+    name,
+    address,
+    phone,
+    description,
+    image = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
   } = req.body;
   const updatedCard = await bizCard.updateOne(
     { _id: req.params.id },

@@ -1,29 +1,57 @@
 @local=http://localhost:3000
 
-POST {{local}}/cards
-Content-Type: application/json
-
- { "name":"shop", "phone":"05074584", "address":"ddd", "description":"jchjkwhvwjkdvhjkv", "image":"image" }
-###
 
 
 POST {{local}}/users
 Content-Type: application/json
 
-{"name":"453","email":"1111.com","password":"123" }
+ { "name":"ben","email":"5sdddggg4dmGGG@gmail.com","password":"Re'eMt23","isBiz":"true"}
 
 
 ###
+GET {{local}}/users/user
+Content-Type: application/json
+
+{"email":"5s4dm@gmail.com"}
+
+###
+
 POST  {{local}}/auth
 Content-Type: application/json
 
-{"email":"user1@g.com"}
+{ "email": "5sdddggg4dmGGG@gmail.com","password":"Re'eMt23"}
 
 ###
-GET {{local}}/user
+POST {{local}}/cards/create-card
 Content-Type: application/json
 
-{"email":"reem.tafbdbbfbefbmir36@gmail.com"}
+ { "name":"shop", "phone":"050745898", "address":"djjjdd", "description":"jchjkwhvwjkdvhjkv" }
+###
+GET {{local}}/cards/my_cards
+Content-Type: application/json
+
+
+###
+GET {{local}}/cards/63e2fdf70a66d43e113a3e38
+Content-Type: application/json
+
+
+
+###
+PUT {{local}}/cards/63e2fdf70a66d43e113a3e38
+Content-Type: application/json
+
+{  "name":"gff",
+"address":"aaajjjjja",
+    "phone":"aaghhhaaa",
+        "description":"aaaajjjjjj",
+        "image":""}
+
+###
+
+DELETE  {{local}}/cards/63e2fdf70a66d43e113a3e38
+Content-Type: application/json
+
 
 ###
 POST  {{local}}/token
@@ -32,33 +60,3 @@ Content-Type: application/json
 {"email":"testsignin@g.com"}
 
 
-###
-POST  {{local}}/auth
-Content-Type: application/json
-
-{"email":"testsignin@g.com"}
-
-
-###
-GET {{local}}/cards/63d96c10ca325d8e905b27af
-Content-Type: application/json
-
-
-
-###
-GET {{local}}/all
-Content-Type: application/json
-
-###
-PUT {{local}}/cards/63d830811fa978c9919a2441
-Content-Type: application/json
-
-{  "name":"aaaa",
-"address":"aaaa",
-    "phone":"aaaaa",
-        "description":"aaaa",
-        "image":"aaaaa"}
-###
-
-DELETE  {{local}}/cards/63d830811fa978c9919a2441
-Content-Type: application/json
