@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const authMW = require('../middlewares/auth');
 const {
   createCard,
   getAllCards,
@@ -9,10 +9,10 @@ const {
   deleteCard,
 } = require('../service');
 
-router.post('/create-card', createCard);
-router.get('/my_cards', getAllCards);
-router.get('/:id', findCardById);
-router.put('/:id', updateCard);
-router.delete('/:id', deleteCard);
+router.post('/', authMW, createCard);
+router.get('/my_cards', authMW, getAllCards);
+router.get('/:id', authMW, findCardById);
+router.put('/:id', authMW, updateCard);
+router.delete('/:id', authMW, deleteCard);
 
 module.exports = router;

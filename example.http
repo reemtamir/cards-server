@@ -1,62 +1,62 @@
 @local=http://localhost:3000
-
-
-
-POST {{local}}/users
+@token= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc0JpeiI6dHJ1ZSwiX2lkIjoiNjNlNzI0OTAxYWNlNjNmOTZmYTQzMGQ2IiwiaWF0IjoxNjc2MDkyNjM2fQ.4XfQVpMuC7gyNGV9leZcBXVPbKk9UsqwmjEoEMY6FR0
+POST {{local}}/users/
 Content-Type: application/json
 
- { "name":"ben","email":"1111@gmail.com","password":"Re'eMt23","isBiz":"true"}
+ { "name":"dani","email":"11ea3a@gmail.com","password":"Re'eMt23","isBiz":"true"}
 
 
 ###
-GET {{local}}/users/user
+
+GET {{local}}/users/me
+x-auth-token:{{token}}
 Content-Type: application/json
 
-{"email":"5s4dm@gmail.com"}
 
 ###
 
-POST  {{local}}/auth
+POST  {{local}}/auth/
 Content-Type: application/json
 
-{ "email": "1111@gmail.com","password":"Re'eMt23"}
+{ "email":"11ea3a@gmail.com","password":"Re'eMt23"}
 
 ###
-POST {{local}}/cards/create-card
+POST {{local}}/cards/
+x-auth-token:{{token}}
 Content-Type: application/json
 
- { "name":"shop", "phone":"050745898", "address":"djjjdd", "description":"jchjkwhvwjkdvhjkv" }
+
+ { "bizName":"dddssssssse","bizPhone":"0507222222","bizAddress":"djjssssdd" ,"bizDescription":"yesssssssss"  }
 ###
 GET {{local}}/cards/my_cards
+x-auth-token:{{token}}
 Content-Type: application/json
 
 
 ###
-GET {{local}}/cards/63e2fdf70a66d43e113a3e38
+GET {{local}}/cards/63e724ff1ace63f96fa430e2
+x-auth-token:{{token}}
 Content-Type: application/json
 
 
 
 ###
-PUT {{local}}/cards/63e2fdf70a66d43e113a3e38
+PUT {{local}}/cards/63e724ff1ace63f96fa430e2
+x-auth-token:{{token}}
 Content-Type: application/json
 
-{  "name":"gff",
-"address":"aaajjjjja",
-    "phone":"aaghhhaaa",
-        "description":"aaaajjjjjj",
-        "image":""}
+{  "bizName":"hello",
+"bizAddress":"aaajjjjja",
+    "bizPhone":"023433333",
+        "bizDescription":"aaaajjjjjj",
+        "bizImage":""}
 
 ###
 
-DELETE  {{local}}/cards/63e2fdf70a66d43e113a3e38
+DELETE  {{local}}/cards/63e724ff1ace63f96fa430e2
+x-auth-token:{{token}}
 Content-Type: application/json
 
 
-###
-POST  {{local}}/token
-Content-Type: application/json
-
-{"email":"testsignin@g.com"}
 
 

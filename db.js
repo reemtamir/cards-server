@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const _ = require('lodash');
 mongoose.set('strictQuery', false);
 const connect = () =>
   mongoose
@@ -9,13 +10,6 @@ const connect = () =>
 
     .catch((err) => console.log(err));
 
-const cardSchema = new mongoose.Schema({
-  bizName: String,
-  bizPhone: String,
-  bizAddress: String,
-  bizDescription: String,
-  bizImage: String,
-});
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -37,20 +31,15 @@ const userSchema = new mongoose.Schema({
     maxLength: 1064,
   },
   isBiz: { type: Boolean, required: true, default: false },
-  token: String,
   createdAt: { type: Date, default: Date.now },
-  cards: { type: Array },
 });
 userSchema.methods.generateAuthToken = function () {
   return jwt.sign(
     { isBiz: this.isBiz, _id: this._id },
-    process.env.TOKEN_SECRET,
-    {
-      expiresIn: '1h',
-    }
+    process.env.JWT_SECRET_TOKEN
   );
 };
-const bizCard = mongoose.model('Card', cardSchema, 'cards');
+
 const User = mongoose.model('User', userSchema, 'users');
 
 const validateCreateUser = (user) => {
@@ -59,7 +48,6 @@ const validateCreateUser = (user) => {
     email: Joi.string().min(6).max(255).required().email(),
     password: Joi.string().min(6).max(1064).required(),
     isBiz: Joi.boolean().required(),
-    token: Joi.string(),
   });
   return schema.validate(user);
 };
@@ -70,17 +58,54 @@ const validateSignIn = (user) => {
   });
   return schema.validate(user);
 };
-
+const cardSchema = new mongoose.Schema({
+  bizName: { type: String, required: true, minLength: 2, maxLength: 255 },
+  bizPhone: { type: String, required: true, minLength: 9, maxLength: 10 },
+  bizAddress: { type: String, required: true, minLength: 2, maxLength: 400 },
+  bizDescription: {
+    type: String,
+    required: true,
+    minLength: 2,
+    maxLength: 1024,
+  },
+  bizImage: { type: String, required: true, minLength: 11, maxLength: 1064 },
+  bizNumber: {
+    type: Number,
+    min: 100,
+    max: 99_999_999_999,
+    unique: true,
+  },
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+});
 const validateCard = (card) => {
   const schema = Joi.object({
-    name: Joi.string().min(2).max(255).required(),
-    phone: Joi.string().min(9).max(10).required(),
-    address: Joi.string().min(6).max(50).required(),
-    description: Joi.string().min(5).max(30).required(),
-    image: Joi.string().allow(''),
+    bizName: Joi.string().min(2).max(255).required(),
+    bizPhone: Joi.string()
+      .min(9)
+      .max(10)
+      .required()
+      .regex(/^0[2-9]\d{7,8}$/),
+    bizAddress: Joi.string().min(2).max(400).required(),
+    bizDescription: Joi.string().min(2).max(1024).required(),
+    bizImage: Joi.string().allow('').min(11).max(1064).uri(),
   });
   return schema.validate(card);
 };
+const generateBizNumber = async () => {
+  while (true) {
+    let random = _.random(100, 99_999_999_999);
+    let card = await bizCard.findOne({ bizNumber: random });
+
+    if (!card) {
+      return random;
+    }
+  }
+};
+const bizCard = mongoose.model('Card', cardSchema, 'cards');
 module.exports = {
   connect,
   bizCard,
@@ -88,4 +113,5 @@ module.exports = {
   validateCreateUser,
   validateSignIn,
   validateCard,
+  generateBizNumber,
 };

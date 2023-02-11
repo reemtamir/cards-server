@@ -4,6 +4,7 @@ const {
   validateCreateUser,
   validateSignIn,
   validateCard,
+  generateBizNumber,
 } = require('./db');
 
 const bcrypt = require('bcrypt');
@@ -34,12 +35,7 @@ const createUser = async (req, res) => {
   res.send(_.pick(user, ['_id', 'name', 'isBiz']));
 };
 
-const getUserByEmail = async (req, res) => {
-  const user = await User.find({ email: req.body.email });
-  res.send(user);
-};
-
-const signIn = async (req, res, next) => {
+const signIn = async (req, res) => {
   const { error } = validateSignIn(req.body);
   if (error) {
     res.status(400).send(error.details[0].message);
@@ -65,36 +61,43 @@ const signIn = async (req, res, next) => {
   const token = user.generateAuthToken();
   res.send({ token });
 };
+
+const getUser = async (req, res) => {
+  const user = await User.findById({ _id: req.user._id }, { password: 0 });
+  res.send(user);
+};
 const createCard = async (req, res) => {
   const { error } = validateCard(req.body);
   if (error) {
     res.status(400).send(error.details[0].message);
     return;
   }
-  const {
-    name,
-    phone,
-    address,
-    description,
 
-    image = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-  } = req.body;
   const card = await new bizCard({
-    bizName: name,
-    bizPhone: phone,
-    bizAddress: address,
-    bizDescription: description,
-    bizImage: image,
+    ...req.body,
+    bizImage:
+      req.body.bizImage ||
+      'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+    bizNumber: await generateBizNumber(),
+    user_id: req.user._id,
   }).save();
 
   res.send(card);
 };
 const findCardById = async (req, res) => {
-  const card = await bizCard.findOne({ _id: req.params.id });
+  const card = await bizCard.findOne({
+    _id: req.params.id,
+    user_id: req.user._id,
+  });
+
+  if (!card) {
+    res.status(404).send('No card found with the given ID');
+    return;
+  }
   res.send(card);
 };
 const getAllCards = async (req, res) => {
-  const cards = await bizCard.find({});
+  const cards = await bizCard.find({ user_id: req.user._id });
 
   res.send(cards);
 };
@@ -104,29 +107,26 @@ const updateCard = async (req, res) => {
     res.status(400).send(error.details[0].message);
     return;
   }
-  const {
-    name,
-    address,
-    phone,
-    description,
-    image = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-  } = req.body;
-  const updatedCard = await bizCard.updateOne(
-    { _id: req.params.id },
-    {
-      $set: {
-        bizName: name,
-        bizAddress: address,
-        bizPhone: phone,
-        bizDescription: description,
-        bizImage: image,
-      },
-    }
+
+  const updatedCard = await bizCard.findByIdAndUpdate(
+    { _id: req.params.id, user_id: req.user._id },
+    req.body
   );
+  if (!updateCard) {
+    res.status(404).send('No card found with the given ID');
+    return;
+  }
   res.send(updatedCard);
 };
 const deleteCard = async (req, res) => {
-  const deletedCard = await bizCard.deleteOne({ _id: req.params.id });
+  const deletedCard = await bizCard.findByIdAndRemove({
+    _id: req.params.id,
+    user_id: req.user._id,
+  });
+  if (!deletedCard) {
+    res.status(404).send('No card found with the given ID');
+    return;
+  }
   res.send(deletedCard);
 };
 module.exports = {
@@ -134,7 +134,7 @@ module.exports = {
   findCardById,
   createCard,
   createUser,
-  getUserByEmail,
+  getUser,
   deleteCard,
   updateCard,
   signIn,
