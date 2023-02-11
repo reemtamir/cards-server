@@ -11,10 +11,10 @@ const cors = require('cors');
 const app = express();
 const PORT = 3000;
 connect();
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded());
-app.use(cors());
 
 app.use('/users', userRouter);
 app.use('/auth', authRouter);

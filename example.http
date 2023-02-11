@@ -1,9 +1,9 @@
 @local=http://localhost:3000
-@token= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc0JpeiI6dHJ1ZSwiX2lkIjoiNjNlNzI0OTAxYWNlNjNmOTZmYTQzMGQ2IiwiaWF0IjoxNjc2MDkyNjM2fQ.4XfQVpMuC7gyNGV9leZcBXVPbKk9UsqwmjEoEMY6FR0
+@token= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc0JpeiI6ZmFsc2UsIl9pZCI6IjYzZTgyYjQ5M2Q3OThmNWU0ZmM3ZDRiMyIsImlhdCI6MTY3NjE1OTkyMX0.YpL89VK6emSydPBHCD2j4aPiTeFG4I8uWgxFTI563wA
 POST {{local}}/users/
 Content-Type: application/json
 
- { "name":"dani","email":"11ea3a@gmail.com","password":"Re'eMt23","isBiz":"true"}
+ { "name":"dani","email":"1ea344a@gmail.com","password":"Re'eMt23"}
 
 
 ###
@@ -18,7 +18,7 @@ Content-Type: application/json
 POST  {{local}}/auth/
 Content-Type: application/json
 
-{ "email":"11ea3a@gmail.com","password":"Re'eMt23"}
+{ "email":"1ea344a@gmail.com","password":"Re'eMt23"}
 
 ###
 POST {{local}}/cards/
@@ -34,14 +34,14 @@ Content-Type: application/json
 
 
 ###
-GET {{local}}/cards/63e724ff1ace63f96fa430e2
+GET {{local}}/cards/63e734a1b75d3ac57f197271
 x-auth-token:{{token}}
 Content-Type: application/json
 
 
 
 ###
-PUT {{local}}/cards/63e727a33e81201155507762
+PUT {{local}}/cards/63e734a1b75d3ac57f197271
 x-auth-token:{{token}}
 Content-Type: application/json
 
@@ -53,7 +53,7 @@ Content-Type: application/json
 
 ###
 
-DELETE  {{local}}/cards/63e726f49918b196531fc0ba
+DELETE  {{local}}/cards/63e734a1b75d3ac57f197271
 x-auth-token:{{token}}
 Content-Type: application/json
 

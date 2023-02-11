@@ -47,7 +47,7 @@ const validateCreateUser = (user) => {
     name: Joi.string().min(2).max(255).required(),
     email: Joi.string().min(6).max(255).required().email(),
     password: Joi.string().min(6).max(1064).required(),
-    isBiz: Joi.boolean().required(),
+    isBiz: Joi.boolean(),
   });
   return schema.validate(user);
 };
