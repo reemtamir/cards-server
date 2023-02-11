@@ -41,7 +41,7 @@ Content-Type: application/json
 
 
 ###
-PUT {{local}}/cards/63e724ff1ace63f96fa430e2
+PUT {{local}}/cards/63e727a33e81201155507762
 x-auth-token:{{token}}
 Content-Type: application/json
 
@@ -53,7 +53,7 @@ Content-Type: application/json
 
 ###
 
-DELETE  {{local}}/cards/63e724ff1ace63f96fa430e2
+DELETE  {{local}}/cards/63e726f49918b196531fc0ba
 x-auth-token:{{token}}
 Content-Type: application/json
 

@@ -110,7 +110,8 @@ const updateCard = async (req, res) => {
 
   const updatedCard = await bizCard.findByIdAndUpdate(
     { _id: req.params.id, user_id: req.user._id },
-    req.body
+    req.body,
+    { new: true }
   );
   if (!updateCard) {
     res.status(404).send('No card found with the given ID');
