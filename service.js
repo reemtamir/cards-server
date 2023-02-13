@@ -114,7 +114,12 @@ const updateCard = async (req, res) => {
 
   const updatedCard = await bizCard.findByIdAndUpdate(
     { _id: req.params.id, user_id: req.user._id },
-    req.body,
+    {
+      ...req.body,
+      bizImage:
+        req.body.bizImage ||
+        'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+    },
     { new: true }
   );
   if (!updateCard) {
