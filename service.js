@@ -99,7 +99,7 @@ const findCardById = async (req, res) => {
 };
 const getAllCards = async (req, res) => {
   if (!req.user.isBiz) {
-    res.status(401).send('Access dinied');
+    res.status(401).send('Access denied');
     return;
   }
   const cards = await bizCard.find({ user_id: req.user._id });
