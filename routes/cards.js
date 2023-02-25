@@ -9,7 +9,7 @@ const {
   deleteCard,
 } = require('../service');
 
-router.post('/', authMW, createCard);
+router.post('/create-card', authMW, createCard);
 router.get('/my_cards', authMW, getAllCards);
 router.get('/:id', authMW, findCardById);
 router.put('/:id', authMW, updateCard);

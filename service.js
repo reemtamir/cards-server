@@ -59,7 +59,8 @@ const signIn = async (req, res) => {
     return;
   }
   const token = user.generateAuthToken();
-  res.send({ token });
+
+  res.send(token);
 };
 
 const getUser = async (req, res) => {
